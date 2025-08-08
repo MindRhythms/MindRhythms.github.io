@@ -168,6 +168,16 @@ body {
     50% { opacity: 0.5; }
 }
 
+.demo-mode-indicator {
+    margin-top: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--warning-color);
+    color: white;
+    border-radius: var(--border-radius-small);
+    font-size: 0.8rem;
+    text-align: center;
+}
+
 .btn {
     background: var(--primary-color);
     color: white;
@@ -253,11 +263,11 @@ body {
 }
 
 .breathing-circle.inhale {
-    animation: inhale 4s ease-in-out;
+    animation: inhale 4s ease-in-out forwards;
 }
 
 .breathing-circle.exhale {
-    animation: exhale 6s ease-in-out;
+    animation: exhale 6s ease-in-out forwards;
 }
 
 @keyframes inhale {
@@ -478,4 +488,173 @@ body {
     .install-actions {
         flex-direction: column;
     }
+    
+    .onboarding-content {
+        padding: var(--spacing-md);
+        margin: var(--spacing-sm);
+    }
+    
+    .radio-group {
+        flex-direction: column;
+    }
+    
+    .radio-item {
+        min-width: auto;
+    }
+}
+
+.debug-panel {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    box-shadow: var(--shadow-heavy);
+    z-index: 999;
+    max-width: 300px;
+}
+
+.debug-content {
+    padding: var(--spacing-sm);
+}
+
+.debug-content h4 {
+    margin: 0 0 var(--spacing-xs) 0;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+.debug-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.debug-info div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.debug-info strong {
+    color: var(--text-primary);
+}
+
+.onboarding-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+}
+
+.onboarding-content {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-heavy);
+    border: 1px solid var(--border-color);
+    padding: var(--spacing-xl);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.onboarding-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.onboarding-header h2 {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+    font-size: 1.8rem;
+}
+
+.onboarding-header p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.onboarding-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.form-group {
+    text-align: left;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.radio-group {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
+}
+
+.radio-item:hover {
+    background: var(--bg-secondary);
+}
+
+.radio-item input[type="radio"] {
+    margin: 0;
+}
+
+.radio-text {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-select {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.onboarding-submit {
+    margin-top: var(--spacing-md);
+}
+
+.expected-baseline {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: var(--spacing-xs);
 }

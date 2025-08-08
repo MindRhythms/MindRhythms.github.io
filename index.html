@@ -11,6 +11,48 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M2ViIiBzdHJva2Utd2lkdGg9IjIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTIwLjg0IDQuNjFhMTUuNzgxIDE1Ljc4MSAwIDAgMC03LjU3MiAyLjczYy0yLjc1Mi44ODMtNS4xNyAyLjczLTcuNTcyIDIuNzMtMi40MDIgMC00LjgyIDEuODQ3LTcuNTcyLTIuNzNBMTUuNzgxIDE1Ljc4MSAwIDAgMCAzLjE2IDQuNjFWMTNBMTAuNSAxMC41IDAgMCAwIDcuNSAyMWg5YTEwLjUgMTAuNSAwIDAgMCA0LjUtOFY0LjYxeiIvPjwvc3ZnPg==">
 </head>
 <body>
+    <div id="onboarding-overlay" class="onboarding-overlay hidden">
+        <div class="onboarding-content">
+            <div class="onboarding-header">
+                <h2>Welcome to MindRhythms</h2>
+                <p>Let's set up your profile for personalized heart rate monitoring</p>
+            </div>
+            
+            <form id="onboarding-form" class="onboarding-form">
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="gender" value="male" required>
+                            <span class="radio-text">Male</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="gender" value="female" required>
+                            <span class="radio-text">Female</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Age Group</label>
+                    <select name="ageGroup" class="form-select" required>
+                        <option value="">Select your age group</option>
+                        <option value="18-25">18-25</option>
+                        <option value="26-35">26-35</option>
+                        <option value="36-45">36-45</option>
+                        <option value="46-55">46-55</option>
+                        <option value="56-65">56-65</option>
+                        <option value="65+">65+</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary onboarding-submit">
+                    Continue to App
+                </button>
+            </form>
+        </div>
+    </div>
+
     <div id="app">
         <header class="header">
             <h1 class="header-title">MindRhythms</h1>
@@ -30,6 +72,9 @@
                     <div id="connection-indicator" class="connection-indicator disconnected">
                         <div class="indicator-dot"></div>
                         <span id="connection-text">Not Connected</span>
+                    </div>
+                    <div id="demo-mode-indicator" class="demo-mode-indicator hidden">
+                        <span>📊 Demo mode active</span>
                     </div>
                 </div>
 
@@ -81,7 +126,10 @@
 
         <footer class="footer">
             <div class="baseline-info">
-                <span id="baseline-text">Baseline: Calculating...</span>
+                <div><span id="baseline-text">Baseline: Calculating...</span></div>
+                <div id="expected-baseline" class="expected-baseline hidden">
+                    <span id="expected-baseline-text">Expected baseline: -- bpm</span>
+                </div>
             </div>
         </footer>
     </div>
@@ -94,6 +142,18 @@
             <div class="install-actions">
                 <button id="install-app" class="btn btn-primary">Install</button>
                 <button id="dismiss-install" class="btn btn-outline">Not Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="debug-panel" class="debug-panel hidden">
+        <div class="debug-content">
+            <h4>Debug Panel</h4>
+            <div class="debug-info">
+                <div><strong>Current HR:</strong> <span id="debug-hr">--</span></div>
+                <div><strong>Baseline:</strong> <span id="debug-baseline">--</span></div>
+                <div><strong>Delta:</strong> <span id="debug-delta">--</span></div>
+                <div><strong>HR Buffer:</strong> <span id="debug-buffer">--</span></div>
             </div>
         </div>
     </div>
