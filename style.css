@@ -811,3 +811,18 @@ body {
     justify-content: center;
     flex-wrap: wrap;
 }
+#breathing-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  height: 100%;
+  width: 100%;
+  max-width: 90%;
+  padding: 0 10px;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}

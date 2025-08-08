@@ -65,6 +65,26 @@ self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
     }
+    
+    if (event.data && event.data.type === 'show-notification') {
+        self.registration.showNotification(event.data.title, {
+            body: event.data.body,
+            icon: '/icons/icon-192x192.png',
+            badge: '/icons/icon-72x72.png',
+            tag: 'heart-rate-alert',
+            requireInteraction: true,
+            actions: [
+                {
+                    action: 'breathing',
+                    title: 'Start Breathing'
+                },
+                {
+                    action: 'dismiss',
+                    title: 'Dismiss'
+                }
+            ]
+        });
+    }
 });
 
 self.addEventListener('sync', (event) => {
@@ -76,19 +96,40 @@ self.addEventListener('sync', (event) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-            for (const client of clientList) {
-                if (client.url === '/' && 'focus' in client) {
-                    return client.focus();
+    if (event.action === 'breathing') {
+        event.waitUntil(
+            clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+                for (const client of clientList) {
+                    if (client.url.includes(location.origin) && 'focus' in client) {
+                        client.postMessage({ type: 'start-breathing-from-notification' });
+                        return client.focus();
+                    }
                 }
-            }
-            
-            if (clients.openWindow) {
-                return clients.openWindow('/');
-            }
-        })
-    );
+                
+                if (clients.openWindow) {
+                    return clients.openWindow('/?action=breathing');
+                }
+            })
+        );
+    } else if (event.action === 'dismiss') {
+        // Just close the notification (already done above)
+        return;
+    } else {
+        // Default click behavior - open app
+        event.waitUntil(
+            clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+                for (const client of clientList) {
+                    if (client.url.includes(location.origin) && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                
+                if (clients.openWindow) {
+                    return clients.openWindow('/');
+                }
+            })
+        );
+    }
 });
 
 function doBackgroundSync() {

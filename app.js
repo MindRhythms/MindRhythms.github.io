@@ -30,6 +30,7 @@ class MindRhythmsApp {
         this.setupPWA();
         this.setupDebugMode();
         this.requestNotificationPermission();
+        this.setupServiceWorkerMessageListener();
         this.checkOnboarding();
     }
 
@@ -158,6 +159,7 @@ handleHeartRateData(event) {
         }
         
         this.showNotification();
+        this.triggerBackgroundNotification();
     }
 
     dismissAlert() {
@@ -559,6 +561,17 @@ handleHeartRateData(event) {
             this.expectedBaseline = this.getExpectedBaseline(this.userProfile.gender, this.userProfile.ageGroup);
             this.showExpectedBaseline();
             this.checkForDemoMode();
+            this.checkURLParameters();
+        }
+    }
+
+    checkURLParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'breathing') {
+            setTimeout(() => {
+                this.currentTechnique = document.getElementById('breathing-technique').value;
+                this.beginBreathingExercise();
+            }, 1000);
         }
     }
 
@@ -619,9 +632,12 @@ handleHeartRateData(event) {
     }
 
     requestNotificationPermission() {
-        if ('Notification' in window && Notification.permission !== 'granted') {
+        if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
             Notification.requestPermission().then(permission => {
                 console.log('Notification permission:', permission);
+                if (permission === 'granted') {
+                    console.log('Background notifications enabled');
+                }
             });
         }
     }
@@ -651,6 +667,37 @@ handleHeartRateData(event) {
             } else if (Notification.permission !== 'denied') {
                 Notification.requestPermission();
             }
+        }
+    }
+
+    async triggerBackgroundNotification() {
+        if ('serviceWorker' in navigator && Notification.permission === 'granted') {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                if (registration.active) {
+                    registration.active.postMessage({
+                        type: 'show-notification',
+                        title: 'MindRhythms Alert',
+                        body: 'Your heart rate is elevated. Try a breathing exercise.'
+                    });
+                }
+            } catch (error) {
+                console.log('Failed to send background notification:', error);
+            }
+        }
+    }
+
+    setupServiceWorkerMessageListener() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'start-breathing-from-notification') {
+                    this.dismissAlert();
+                    this.currentTechnique = document.getElementById('breathing-technique').value;
+                    this.beginBreathingExercise();
+                } else if (event.data && event.data.type === 'CACHE_UPDATED') {
+                    console.log('App has been updated. Refresh to see the latest version.');
+                }
+            });
         }
     }
 
@@ -708,14 +755,6 @@ document.addEventListener('DOMContentLoaded', () => {
     app.loadData();
     app.loadTechnique();
 });
-
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'CACHE_UPDATED') {
-            console.log('App has been updated. Refresh to see the latest version.');
-        }
-    });
-}
 
 window.enableDebugMode = function() {
     localStorage.setItem('debug', 'true');
