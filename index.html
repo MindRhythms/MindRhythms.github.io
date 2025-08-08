@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Heart rate monitoring and breathing exercises for anxiety management">
+    <meta name="theme-color" content="#2563eb">
+    <title>MindRhythms - Anxiety Management</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M2ViIiBzdHJva2Utd2lkdGg9IjIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTIwLjg0IDQuNjFhMTUuNzgxIDE1Ljc4MSAwIDAgMC03LjU3MiAyLjczYy0yLjc1Mi44ODMtNS4xNyAyLjczLTcuNTcyIDIuNzMtMi40MDIgMC00LjgyIDEuODQ3LTcuNTcyLTIuNzNBMTUuNzgxIDE1Ljc4MSAwIDAgMCAzLjE2IDQuNjFWMTNBMTAuNSAxMC41IDAgMCAwIDcuNSAyMWg5YTEwLjUgMTAuNSAwIDAgMCA0LjUtOFY0LjYxeiIvPjwvc3ZnPg==">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1 class="header-title">MindRhythms</h1>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </header>
+
+        <main class="main">
+            <div id="connection-section" class="section">
+                <div class="heart-rate-display">
+                    <div id="heart-rate-value" class="heart-rate-value">--</div>
+                    <div class="heart-rate-unit">bpm</div>
+                </div>
+                
+                <div class="connection-status">
+                    <div id="connection-indicator" class="connection-indicator disconnected">
+                        <div class="indicator-dot"></div>
+                        <span id="connection-text">Not Connected</span>
+                    </div>
+                </div>
+
+                <button id="connect-sensor" class="btn btn-primary">
+                    Connect Heart Rate Sensor
+                </button>
+            </div>
+
+            <div id="breathing-section" class="section hidden">
+                <div id="breathing-guide" class="breathing-guide">
+                    <div id="breathing-circle" class="breathing-circle">
+                        <div class="breathing-inner-circle"></div>
+                        <div id="breathing-text" class="breathing-text">Breathe</div>
+                    </div>
+                </div>
+
+                <div class="breathing-controls">
+                    <button id="start-breathing" class="btn btn-secondary">
+                        Start Breathing Exercise
+                    </button>
+                    <button id="stop-breathing" class="btn btn-outline hidden">
+                        Stop Exercise
+                    </button>
+                </div>
+
+                <div id="breathing-timer" class="breathing-timer hidden">
+                    <div class="timer-display">
+                        <span id="timer-minutes">00</span>:<span id="timer-seconds">00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="anxiety-alert" class="anxiety-alert hidden">
+                <div class="alert-content">
+                    <div class="alert-icon">⚠️</div>
+                    <h3>Elevated Heart Rate Detected</h3>
+                    <p>Your heart rate has been elevated for over a minute. Would you like to try a breathing exercise?</p>
+                    <div class="alert-actions">
+                        <button id="start-alert-breathing" class="btn btn-primary">
+                            Start Breathing
+                        </button>
+                        <button id="dismiss-alert" class="btn btn-outline">
+                            Dismiss
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="baseline-info">
+                <span id="baseline-text">Baseline: Calculating...</span>
+            </div>
+        </footer>
+    </div>
+
+    <div id="install-prompt" class="install-prompt hidden">
+        <div class="install-content">
+            <div class="install-icon">📱</div>
+            <h3>Install MindRhythms</h3>
+            <p>Add this app to your home screen for the best experience.</p>
+            <div class="install-actions">
+                <button id="install-app" class="btn btn-primary">Install</button>
+                <button id="dismiss-install" class="btn btn-outline">Not Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
