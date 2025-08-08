@@ -73,19 +73,26 @@ class MindRhythmsApp {
         }
     }
 
-    handleHeartRateData(event) {
-        const value = event.target.value;
-        const heartRate = value.getUint16(1, true);
-        
-        this.heartRate = heartRate;
-        this.heartRateReadings.push(heartRate);
-        
-        this.updateHeartRateDisplay();
-        this.calculateBaseline();
-        this.checkForAnxiety();
-        
-        this.saveData();
+handleHeartRateData(event) {
+    const value = event.target.value;
+    const flags = value.getUint8(0);
+
+    let heartRate = 0;
+    if ((flags & 0x01) === 0) {
+        heartRate = value.getUint8(1);
+    } else {
+        heartRate = value.getUint16(1, true);
     }
+
+    this.heartRate = heartRate;
+    this.heartRateReadings.push(heartRate);
+
+    this.updateHeartRateDisplay();
+    this.calculateBaseline();
+    this.checkForAnxiety();
+
+    this.saveData();
+}
 
     updateHeartRateDisplay() {
         document.getElementById('heart-rate-value').textContent = this.heartRate;
