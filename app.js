@@ -16,6 +16,9 @@ class MindRhythmsApp {
         this.demoMode = false;
         this.userProfile = null;
         this.expectedBaseline = null;
+        this.currentTechnique = 'resonance';
+        this.breathingCycleCount = 4;
+        this.breathingInstructions = null;
         
         this.init();
     }
@@ -40,6 +43,9 @@ class MindRhythmsApp {
         document.getElementById('install-app').addEventListener('click', () => this.installApp());
         document.getElementById('dismiss-install').addEventListener('click', () => this.dismissInstallPrompt());
         document.getElementById('onboarding-form').addEventListener('submit', (e) => this.handleOnboarding(e));
+        document.getElementById('breathing-technique').addEventListener('change', (e) => this.saveTechnique(e.target.value));
+        document.getElementById('start-exercise').addEventListener('click', () => this.beginBreathingExercise());
+        document.getElementById('cancel-exercise').addEventListener('click', () => this.cancelInstructions());
     }
 
     async connectHeartRateSensor() {
@@ -160,15 +166,43 @@ handleHeartRateData(event) {
 
     startBreathingFromAlert() {
         this.dismissAlert();
-        this.startBreathingExercise();
+        this.currentTechnique = document.getElementById('breathing-technique').value;
+        this.beginBreathingExercise();
     }
 
     async startBreathingExercise() {
+        this.currentTechnique = document.getElementById('breathing-technique').value;
+        this.showBreathingInstructions();
+    }
+
+    showBreathingInstructions() {
+        const instructions = this.getBreathingInstructions(this.currentTechnique);
+        document.getElementById('instructions-title').textContent = instructions.name;
+        
+        const list = document.getElementById('instructions-list');
+        list.innerHTML = '';
+        instructions.steps.forEach(step => {
+            const li = document.createElement('li');
+            li.textContent = step;
+            list.appendChild(li);
+        });
+        
+        document.getElementById('breathing-instructions').classList.remove('hidden');
+    }
+
+    cancelInstructions() {
+        document.getElementById('breathing-instructions').classList.add('hidden');
+    }
+
+    async beginBreathingExercise() {
+        document.getElementById('breathing-instructions').classList.add('hidden');
+        
         if (this.breathingActive) return;
 
         this.breathingActive = true;
         this.breathingStartTime = Date.now();
         this.breathingPhase = 'inhale';
+        this.breathingCycleCount = 4;
         
         if ('wakeLock' in navigator) {
             try {
@@ -182,31 +216,181 @@ handleHeartRateData(event) {
         document.getElementById('stop-breathing').classList.remove('hidden');
         document.getElementById('breathing-timer').classList.remove('hidden');
         
-        this.breathingCycle();
+        this.startBreathingCycle();
         this.updateBreathingTimer();
     }
 
-    breathingCycle() {
+    getBreathingInstructions(technique) {
+        const instructions = {
+            resonance: {
+                name: 'Resonance Breathing',
+                steps: [
+                    'Sit or lie down in a comfortable position',
+                    'Place one hand on your chest, one on your belly',
+                    'Inhale slowly through your nose for 4 seconds',
+                    'Exhale slowly through your mouth for 6 seconds',
+                    'Focus on slow, deep breathing from your diaphragm'
+                ]
+            },
+            abdominal: {
+                name: 'Abdominal Breathing',
+                steps: [
+                    'Lie on your back if possible',
+                    'Place one hand on your chest and the other on your stomach',
+                    'Inhale slowly through the nose, allowing the stomach to rise',
+                    'Exhale slowly through the mouth; exhale should be twice as long as the inhale',
+                    'Keep shoulders relaxed and avoid lifting them',
+                    'Once rhythm is established, inhale and exhale both through the nose',
+                    'Between breaths, briefly pause before inhaling again'
+                ]
+            },
+            'high-stress': {
+                name: 'High-Stress Breathing',
+                steps: [
+                    'You may choose any comfortable body position',
+                    'Breathing cycle is based on counting slowly to 4',
+                    'After each full cycle (inhale, hold, exhale, hold), increment the count by 1',
+                    'Count up to 8, then reset to 4 and repeat',
+                    'Focus on the counting to help calm your mind'
+                ]
+            },
+            relaxation: {
+                name: 'Relaxation in Motion',
+                steps: [
+                    'Can be done while sitting, standing, or walking',
+                    'While inhaling, mentally say the syllable "SA"',
+                    'While exhaling, mentally say "HA"',
+                    'Continue breathing with this rhythm until relaxed',
+                    'Let your breathing be natural and unforced'
+                ]
+            }
+        };
+        
+        return instructions[technique] || instructions.resonance;
+    }
+
+    startBreathingCycle() {
         if (!this.breathingActive) return;
 
         const circle = document.getElementById('breathing-circle');
         const text = document.getElementById('breathing-text');
+        const count = document.getElementById('breathing-count');
 
+        // Clear previous animation classes
+        circle.classList.remove('inhale', 'exhale', 'abdominal-inhale', 'abdominal-exhale', 'relaxation-inhale', 'relaxation-exhale');
+
+        switch (this.currentTechnique) {
+            case 'resonance':
+                this.resonanceBreathing(circle, text, count);
+                break;
+            case 'abdominal':
+                this.abdominalBreathing(circle, text, count);
+                break;
+            case 'high-stress':
+                this.highStressBreathing(circle, text, count);
+                break;
+            case 'relaxation':
+                this.relaxationBreathing(circle, text, count);
+                break;
+        }
+    }
+
+    resonanceBreathing(circle, text, count) {
+        count.classList.add('hidden');
+        
         if (this.breathingPhase === 'inhale') {
-            circle.classList.remove('exhale');
             circle.classList.add('inhale');
             text.textContent = 'Inhale';
             this.breathingPhase = 'exhale';
-            
-            setTimeout(() => this.breathingCycle(), 4000);
+            setTimeout(() => this.startBreathingCycle(), 4000);
         } else {
-            circle.classList.remove('inhale');
             circle.classList.add('exhale');
             text.textContent = 'Exhale';
             this.breathingPhase = 'inhale';
-            
-            setTimeout(() => this.breathingCycle(), 6000);
+            setTimeout(() => this.startBreathingCycle(), 6000);
         }
+    }
+
+    abdominalBreathing(circle, text, count) {
+        count.classList.add('hidden');
+        
+        if (this.breathingPhase === 'inhale') {
+            circle.classList.add('abdominal-inhale');
+            text.textContent = 'Inhale through nose';
+            this.breathingPhase = 'exhale';
+            setTimeout(() => this.startBreathingCycle(), 4000);
+        } else if (this.breathingPhase === 'exhale') {
+            circle.classList.add('abdominal-exhale');
+            text.textContent = 'Exhale through mouth';
+            this.breathingPhase = 'pause';
+            setTimeout(() => this.startBreathingCycle(), 8000);
+        } else {
+            text.textContent = 'Pause';
+            this.breathingPhase = 'inhale';
+            setTimeout(() => this.startBreathingCycle(), 1000);
+        }
+    }
+
+    highStressBreathing(circle, text, count) {
+        count.classList.remove('hidden');
+        
+        const phases = ['inhale', 'hold1', 'exhale', 'hold2'];
+        const currentPhaseIndex = phases.indexOf(this.breathingPhase);
+        const duration = this.breathingCycleCount * 1000;
+        
+        switch (this.breathingPhase) {
+            case 'inhale':
+                circle.classList.add('inhale');
+                text.textContent = 'Inhale';
+                count.textContent = `Count: ${this.breathingCycleCount}`;
+                this.breathingPhase = 'hold1';
+                break;
+            case 'hold1':
+                text.textContent = 'Hold';
+                count.textContent = `Count: ${this.breathingCycleCount}`;
+                this.breathingPhase = 'exhale';
+                break;
+            case 'exhale':
+                circle.classList.remove('inhale');
+                circle.classList.add('exhale');
+                text.textContent = 'Exhale';
+                count.textContent = `Count: ${this.breathingCycleCount}`;
+                this.breathingPhase = 'hold2';
+                break;
+            case 'hold2':
+                text.textContent = 'Hold';
+                count.textContent = `Count: ${this.breathingCycleCount}`;
+                this.breathingPhase = 'inhale';
+                this.breathingCycleCount++;
+                if (this.breathingCycleCount > 8) {
+                    this.breathingCycleCount = 4;
+                }
+                break;
+        }
+        
+        setTimeout(() => this.startBreathingCycle(), duration);
+    }
+
+    relaxationBreathing(circle, text, count) {
+        count.classList.add('hidden');
+        
+        if (this.breathingPhase === 'inhale') {
+            circle.classList.add('relaxation-inhale');
+            text.textContent = 'Inhale – SA';
+            this.breathingPhase = 'exhale';
+            setTimeout(() => this.startBreathingCycle(), 3000);
+        } else {
+            circle.classList.add('relaxation-exhale');
+            text.textContent = 'Exhale – HA';
+            this.breathingPhase = 'inhale';
+            setTimeout(() => this.startBreathingCycle(), 3000);
+        }
+    }
+
+    breathingCycle() {
+        // This method is now replaced by startBreathingCycle()
+        // Kept for backward compatibility
+        this.startBreathingCycle();
     }
 
     updateBreathingTimer() {
@@ -231,8 +415,9 @@ handleHeartRateData(event) {
         }
         
         const circle = document.getElementById('breathing-circle');
-        circle.classList.remove('inhale', 'exhale');
+        circle.classList.remove('inhale', 'exhale', 'abdominal-inhale', 'abdominal-exhale', 'relaxation-inhale', 'relaxation-exhale');
         document.getElementById('breathing-text').textContent = 'Breathe';
+        document.getElementById('breathing-count').classList.add('hidden');
         
         document.getElementById('start-breathing').classList.remove('hidden');
         document.getElementById('stop-breathing').classList.add('hidden');
@@ -456,7 +641,8 @@ handleHeartRateData(event) {
                     window.focus();
                     notification.close();
                     this.dismissAlert();
-                    this.startBreathingExercise();
+                    this.currentTechnique = document.getElementById('breathing-technique').value;
+                    this.beginBreathingExercise();
                 };
 
                 setTimeout(() => {
@@ -502,11 +688,25 @@ handleHeartRateData(event) {
                 this.heartRateReadings.slice(-10).join(', ');
         }
     }
+
+    saveTechnique(technique) {
+        this.currentTechnique = technique;
+        localStorage.setItem('breathing-technique', technique);
+    }
+
+    loadTechnique() {
+        const savedTechnique = localStorage.getItem('breathing-technique');
+        if (savedTechnique) {
+            this.currentTechnique = savedTechnique;
+            document.getElementById('breathing-technique').value = savedTechnique;
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = new MindRhythmsApp();
     app.loadData();
+    app.loadTechnique();
 });
 
 if ('serviceWorker' in navigator) {

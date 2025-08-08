@@ -84,10 +84,21 @@
             </div>
 
             <div id="breathing-section" class="section hidden">
+                <div class="breathing-technique-selector">
+                    <label class="form-label">Choose Breathing Technique</label>
+                    <select id="breathing-technique" class="form-select">
+                        <option value="resonance">Resonance Breathing (Default)</option>
+                        <option value="abdominal">Abdominal Breathing</option>
+                        <option value="high-stress">High-Stress Breathing</option>
+                        <option value="relaxation">Relaxation in Motion</option>
+                    </select>
+                </div>
+
                 <div id="breathing-guide" class="breathing-guide">
                     <div id="breathing-circle" class="breathing-circle">
                         <div class="breathing-inner-circle"></div>
                         <div id="breathing-text" class="breathing-text">Breathe</div>
+                        <div id="breathing-count" class="breathing-count hidden"></div>
                     </div>
                 </div>
 
@@ -118,6 +129,25 @@
                         </button>
                         <button id="dismiss-alert" class="btn btn-outline">
                             Dismiss
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="breathing-instructions" class="breathing-instructions hidden">
+                <div class="instructions-content">
+                    <div class="instructions-header">
+                        <h3 id="instructions-title">Breathing Exercise</h3>
+                    </div>
+                    <div class="instructions-body">
+                        <ul id="instructions-list"></ul>
+                    </div>
+                    <div class="instructions-actions">
+                        <button id="start-exercise" class="btn btn-primary">
+                            Begin Exercise
+                        </button>
+                        <button id="cancel-exercise" class="btn btn-outline">
+                            Cancel
                         </button>
                     </div>
                 </div>
